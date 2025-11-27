@@ -311,49 +311,54 @@ const Results = () => {
       const isAuthenticated = authAPI.isAuthenticated();
       
       if (isAuthenticated) {
-        // User is logged in - send via backend
         const token = authAPI.getAccessToken();
-        if (!token) return;
-
-        await emailApi.sendResultsEmail(
-          {
-            measurements: {
-              bust: measurements.bust,
-              waist: measurements.waist,
-              hips: measurements.hips,
-              bodyType: measurements.bodyType
-            },
-            recommendations: recommendations,
-            email: emailAddress
-          },
-          token
-        );
-        
-        toast.success(`Size guide sent to ${emailAddress}!`, {
-          description: "Check your inbox for your personalized recommendations",
-          duration: 5000,
-        });
-      } else {
-        // Not logged in - use EmailJS
-        const emailData = {
-          to_email: emailAddress,
-          user_name: emailAddress.split('@')[0] || "Valued Customer",
-          measurements: {
-            bust: measurements.bust,
-            waist: measurements.waist,
-            hips: measurements.hips,
-            bodyType: measurements.bodyType
-          },
-          recommendations: recommendations
-        };
-
-        await sendSizeRecommendations(emailData);
-        
-        toast.success(`Size guide sent to ${emailAddress}!`, {
-          description: "Check your inbox for your personalized recommendations",
-          duration: 5000,
-        });
+        if (token) {
+          try {
+            await emailApi.sendResultsEmail(
+              {
+                measurements: {
+                  bust: measurements.bust,
+                  waist: measurements.waist,
+                  hips: measurements.hips,
+                  bodyType: measurements.bodyType
+                },
+                recommendations: recommendations,
+                email: emailAddress
+              },
+              token
+            );
+            
+            toast.success(`Size guide sent to ${emailAddress}!`, {
+              description: "Check your inbox for your personalized recommendations",
+              duration: 5000,
+            });
+            return;
+          } catch (backendError) {
+            console.error("Backend email error:", backendError);
+            // Fall through to EmailJS
+          }
+        }
       }
+      
+      // Fallback to EmailJS
+      const emailData = {
+        to_email: emailAddress,
+        user_name: emailAddress.split('@')[0] || "Valued Customer",
+        measurements: {
+          bust: measurements.bust,
+          waist: measurements.waist,
+          hips: measurements.hips,
+          bodyType: measurements.bodyType
+        },
+        recommendations: recommendations
+      };
+
+      await sendSizeRecommendations(emailData);
+      
+      toast.success(`Size guide sent to ${emailAddress}!`, {
+        description: "Check your inbox for your personalized recommendations",
+        duration: 5000,
+      });
     } catch (error) {
       console.error("Auto-email error:", error);
       // Don't show error toast for automatic send, user can still manually send

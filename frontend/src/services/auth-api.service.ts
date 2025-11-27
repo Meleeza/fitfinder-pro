@@ -123,10 +123,16 @@ class AuthAPI {
   }
 
   isAuthenticated(): boolean {
-    return !!this.accessToken;
+    const storedToken = localStorage.getItem('accessToken');
+    return !!(storedToken || this.accessToken);
   }
 
   getAccessToken(): string | null {
+    const storedToken = localStorage.getItem('accessToken');
+    if (storedToken) {
+      this.accessToken = storedToken;
+      return storedToken;
+    }
     return this.accessToken;
   }
 }
