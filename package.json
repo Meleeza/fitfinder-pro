@@ -1,0 +1,24 @@
+{
+  "name": "fitfinder-pro",
+  "version": "1.0.0",
+  "description": "FitFinder Pro - Personalized clothing measurements and size recommendations",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:all": "npm run install:frontend && npm run install:backend",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "start:frontend": "cd frontend && npm run preview",
+    "start:backend": "cd backend && npm start"
+  },
+  "keywords": ["fitfinder", "measurements", "size-recommendations", "fashion"],
+  "author": "",
+  "license": "ISC"
+}
